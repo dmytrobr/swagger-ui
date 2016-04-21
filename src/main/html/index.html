@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Swagger UI</title>
+  <title>Cloud Manager REST API</title>
   <link rel="icon" type="image/png" href="images/favicon-32x32.png" sizes="32x32" />
   <link rel="icon" type="image/png" href="images/favicon-16x16.png" sizes="16x16" />
   <link href='css/typography.css' media='screen' rel='stylesheet' type='text/css'/>
@@ -37,7 +37,7 @@
       if (url && url.length > 1) {
         url = decodeURIComponent(url[1]);
       } else {
-        url = "http://petstore.swagger.io/v2/swagger.json";
+        url = "generated-api.json";
       }
 
       hljs.configure({
@@ -49,6 +49,7 @@
         window.SwaggerTranslator.translate();
       }
       window.swaggerUi = new SwaggerUi({
+        validatorUrl: null,
         url: url,
         dom_id: "swagger-ui-container",
         supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
@@ -67,6 +68,7 @@
           if(window.SwaggerTranslator) {
             window.SwaggerTranslator.translate();
           }
+          addApiKeyAuthorization();
         },
         onFailure: function(data) {
           log("Unable to Load SwaggerUI");
@@ -74,8 +76,39 @@
         docExpansion: "none",
         jsonEditor: false,
         defaultModelRendering: 'schema',
-        showRequestHeaders: false
+        showRequestHeaders: true
       });
+
+
+      function addApiKeyAuthorization(){
+//        var key = encodeURIComponent($('#input_apiKey')[0].value);
+        var  key = getCookie("iPlanetDirectoryPro");
+		var basicAuth=window.swaggerUi.api.clientAuthorizations.authz['basic'];
+		var foundBasicAuth=!(typeof basicAuth == "undefined");
+		log("Basic Authorization found: " + foundBasicAuth +"___"+ basicAuth);
+		
+		if(!foundBasicAuth){
+			if(key && key.trim() != "" ) {
+				var apiKeyAuth = new SwaggerClient.ApiKeyAuthorization("AuthToken", key, "header");
+				window.swaggerUi.api.clientAuthorizations.add("AUTHENTICATION_TOKEN", apiKeyAuth);
+				log("added key " + key);
+			}
+		} else{
+			log("removed token ");
+			window.swaggerUi.api.clientAuthorizations.remove("AUTHENTICATION_TOKEN");
+		}
+      }
+	  
+	  function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0; i<ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0)==' ') c = c.substring(1);
+            if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
+        }
+        return "";
+       } 
 
       window.swaggerUi.load();
 
@@ -89,16 +122,7 @@
 </head>
 
 <body class="swagger-section">
-<div id='header'>
-  <div class="swagger-ui-wrap">
-    <a id="logo" href="http://swagger.io"><img class="logo__img" alt="swagger" height="30" width="30" src="images/logo_small.png" /><span class="logo__title">swagger</span></a>
-    <form id='api_selector'>
-      <div class='input'><input placeholder="http://example.com/api" id="input_baseUrl" name="baseUrl" type="text"/></div>
-      <div id='auth_container'></div>
-      <div class='input'><a id="explore" class="header__btn" href="#" data-sw-translate>Explore</a></div>
-    </form>
-  </div>
-</div>
+
 
 <div id="message-bar" class="swagger-ui-wrap" data-sw-translate>&nbsp;</div>
 <div id="swagger-ui-container" class="swagger-ui-wrap"></div>

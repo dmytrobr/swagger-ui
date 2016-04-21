@@ -23,18 +23,11 @@
         <h4><span data-sw-translate>Implementation Notes</span></h4>
         <div class="markdown">{{{sanitize description}}}</div>
         {{/if}}
+
         {{#if security}}
             <div class='authorize-wrapper authorize-wrapper_operation'></div>
         {{/if}}
-        {{#if type}}
-          <div class="response-class">
-            <h4><span data-sw-translate>Response Class</span> (<span data-sw-translate>Status</span> {{{escape successCode}}})</h4>
-              {{#if successDescription}}<div class="markdown">{{{sanitize successDescription}}}</div>{{/if}}
-            <p><span class="model-signature" /></p>
-            <br/>
-            <div class="response-content-type" />
-            </div>
-        {{/if}}
+
 
         {{#if headers}}
           <h4 data-sw-translate>Headers</h4>
@@ -59,6 +52,7 @@
             </tbody>
           </table>
         {{/if}}
+
 
         <form accept-charset='UTF-8' class='sandbox'>
           <div style='margin:0;padding:0;display:inline'></div>
@@ -103,7 +97,17 @@
             <span class='response_throbber' style='display:none'></span>
           </div>
           {{/if}}
+          {{#if type}}
+          <div class="response-class">
+            <h4><span data-sw-translate>Response Class</span> (<span data-sw-translate>Status</span> {{successCode}})</h4>
+              {{#if successDescription}}<div class="markdown">{{{successDescription}}}</div>{{/if}}
+            <p><span class="model-signature" /></p>
+            <br/>
+            <div class="response-content-type" />
+            </div>
+           {{/if}}
         </form>
+
         <div class='response' style='display:none'>
           <h4 class='curl'>Curl</h4>
           <div class='block curl'></div>
